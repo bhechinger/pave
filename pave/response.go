@@ -34,3 +34,13 @@ type Response struct {
 	TransferID string
 	Accounts   []Account
 }
+
+type TransferResponse struct {
+	Transfer Transfer
+	Message  string
+}
+
+type AccountResponse struct {
+	Message  string
+	Accounts []Account
+}

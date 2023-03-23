@@ -11,14 +11,14 @@ import (
 )
 
 //encore:api public path=/account/create/:id
-func (s *Service) CreateAccount(ctx context.Context, id string) (*Response, error) {
+func (s *Service) CreateAccount(ctx context.Context, id string) (*AccountResponse, error) {
 	accountsRes, err := s.db.CreateAccounts([]tbTypes.Account{
 		{
 			ID:             helpers.Uint128(id),
 			UserData:       tbTypes.Uint128{},
 			Reserved:       [48]uint8{},
 			Ledger:         1,
-			Code:           718,
+			Code:           1,
 			Flags:          0,
 			DebitsPending:  0,
 			DebitsPosted:   0,
@@ -39,11 +39,11 @@ func (s *Service) CreateAccount(ctx context.Context, id string) (*Response, erro
 		}
 	}
 
-	return &Response{Message: fmt.Sprintf("Added account: %s", id)}, nil
+	return &AccountResponse{Message: fmt.Sprintf("Added account: %s", id)}, nil
 }
 
 //encore:api public path=/account/get/:id
-func (s *Service) GetAccount(ctx context.Context, id string) (*Response, error) {
+func (s *Service) GetAccount(ctx context.Context, id string) (*AccountResponse, error) {
 	accounts, err := s.db.LookupAccounts([]tbTypes.Uint128{helpers.Uint128(id)})
 	if err != nil {
 		rlog.Error("could not fetch accounts", "error", err)
@@ -71,6 +71,5 @@ func (s *Service) GetAccount(ctx context.Context, id string) (*Response, error) 
 		eAccounts[i].Timestamp = accounts[i].Timestamp
 	}
 
-	return &Response{Message: "Account info", Accounts: eAccounts}, nil
-	//return &Response{Message: fmt.Sprintf("Account info: %v", accounts)}, nil
+	return &AccountResponse{Message: "Account info", Accounts: eAccounts}, nil
 }
