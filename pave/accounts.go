@@ -11,22 +11,22 @@ import (
 )
 
 //encore:api public path=/account/create/:id
-func (s *Service) CreateAccount(ctx context.Context, id string) (*AccountResponse, error) {
-	accountsRes, err := s.db.CreateAccounts([]tbTypes.Account{
-		{
-			ID:             helpers.Uint128(id),
-			UserData:       tbTypes.Uint128{},
-			Reserved:       [48]uint8{},
-			Ledger:         1,
-			Code:           1,
-			Flags:          0,
-			DebitsPending:  0,
-			DebitsPosted:   0,
-			CreditsPending: 0,
-			CreditsPosted:  0,
-			Timestamp:      0,
-		},
-	})
+func (s *Service) CreateAccount(_ context.Context, id string) (*AccountResponse, error) {
+	account := tbTypes.Account{
+		ID:             helpers.Uint128(id),
+		UserData:       tbTypes.Uint128{},
+		Reserved:       [48]uint8{},
+		Ledger:         1,
+		Code:           1,
+		Flags:          0,
+		DebitsPending:  0,
+		DebitsPosted:   0,
+		CreditsPending: 0,
+		CreditsPosted:  0,
+		Timestamp:      0,
+	}
+
+	accountsRes, err := s.db.CreateAccounts([]tbTypes.Account{account})
 	if err != nil {
 		rlog.Error("Error creating accounts: %s", err)
 		return nil, fmt.Errorf("error creating accounts: %s", err)
@@ -39,7 +39,7 @@ func (s *Service) CreateAccount(ctx context.Context, id string) (*AccountRespons
 		}
 	}
 
-	return &AccountResponse{Message: fmt.Sprintf("Added account: %s", id)}, nil
+	return &AccountResponse{Message: fmt.Sprintf("Added account: %s", id), Account: tbAccountToAccount(account)}, nil
 }
 
 //encore:api public path=/account/get/:id
@@ -56,20 +56,20 @@ func (s *Service) GetAccount(ctx context.Context, id string) (*AccountResponse, 
 
 	fmt.Println(accounts)
 
-	eAccounts := make([]Account, len(accounts))
+	return &AccountResponse{Message: "Account info", Account: tbAccountToAccount(accounts[0])}, nil
+}
 
-	for i := range accounts {
-		eAccounts[i].ID = fmt.Sprintf("%v", accounts[i].ID)
-		eAccounts[i].UserData = fmt.Sprintf("%s", accounts[i].UserData)
-		eAccounts[i].Ledger = accounts[i].Ledger
-		eAccounts[i].Code = accounts[i].Code
-		eAccounts[i].Flags = accounts[i].Flags
-		eAccounts[i].DebitsPending = accounts[i].DebitsPending
-		eAccounts[i].DebitsPosted = accounts[i].DebitsPosted
-		eAccounts[i].CreditsPending = accounts[i].CreditsPending
-		eAccounts[i].CreditsPosted = accounts[i].CreditsPosted
-		eAccounts[i].Timestamp = accounts[i].Timestamp
+func tbAccountToAccount(account tbTypes.Account) Account {
+	return Account{
+		ID:             fmt.Sprintf("%v", account.ID),
+		UserData:       fmt.Sprintf("%s", account.UserData),
+		Ledger:         account.Ledger,
+		Code:           account.Code,
+		Flags:          account.Flags,
+		DebitsPending:  account.DebitsPending,
+		DebitsPosted:   account.DebitsPosted,
+		CreditsPending: account.CreditsPending,
+		CreditsPosted:  account.CreditsPosted,
+		Timestamp:      account.Timestamp,
 	}
-
-	return &AccountResponse{Message: "Account info", Accounts: eAccounts}, nil
 }

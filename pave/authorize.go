@@ -19,7 +19,7 @@ type AuthorizeOpts struct {
 }
 
 //encore:api public method=POST path=/authorize
-func (s *Service) Authorize(ctx context.Context, opts *AuthorizeOpts) (*Response, error) {
+func (s *Service) Authorize(ctx context.Context, opts *AuthorizeOpts) (*TransferResponse, error) {
 	log := rlog.With(
 		"transferID", opts.TransferID,
 		"code", opts.Code,
@@ -30,7 +30,7 @@ func (s *Service) Authorize(ctx context.Context, opts *AuthorizeOpts) (*Response
 
 	log.Debug("Authorize")
 
-	err := storage.Authorize(ctx, storage.AuthorizeOpts{
+	transfer, err := storage.Authorize(ctx, storage.AuthorizeOpts{
 		TransferID:  helpers.Uint128(opts.TransferID),
 		Code:        opts.Code,
 		FromAccount: opts.FromAccount,
@@ -42,5 +42,5 @@ func (s *Service) Authorize(ctx context.Context, opts *AuthorizeOpts) (*Response
 		return nil, fmt.Errorf("error transferring funds: %s", err)
 	}
 
-	return &Response{Message: "Authorized transfer", TransferID: opts.TransferID}, nil
+	return &TransferResponse{Message: "Authorized transfer", Transfer: tbTransferToTransfer(transfer)}, nil
 }

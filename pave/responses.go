@@ -28,11 +28,14 @@ type Transfer struct {
 	Timestamp       uint64
 }
 
-type Response struct {
-	Transfer   Transfer
-	Message    string
-	TransferID string
-	Accounts   []Account
+type VoidResponse struct {
+	Message   string
+	PendingID string
+}
+
+type PostResponse struct {
+	Message   string
+	PendingID string
 }
 
 type TransferResponse struct {
@@ -41,6 +44,6 @@ type TransferResponse struct {
 }
 
 type AccountResponse struct {
-	Message  string
-	Accounts []Account
+	Message string
+	Account Account
 }

@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"encore.dev/rlog"
+	tbTypes "github.com/tigerbeetledb/tigerbeetle-go/pkg/types"
 
 	"encore.app/internal/helpers"
 	"encore.app/internal/storage"
 )
 
 //encore:api public path=/transfer/get/:transferID
-func (s *Service) GetTransfer(ctx context.Context, transferID string) (*Response, error) {
+func (s *Service) GetTransfer(ctx context.Context, transferID string) (*TransferResponse, error) {
 	log := rlog.With(
 		"transferID", transferID,
 	)
@@ -22,7 +23,11 @@ func (s *Service) GetTransfer(ctx context.Context, transferID string) (*Response
 		return nil, err
 	}
 
-	ret := Transfer{
+	return &TransferResponse{Message: fmt.Sprintf("Found transfer"), Transfer: tbTransferToTransfer(transfer)}, nil
+}
+
+func tbTransferToTransfer(transfer tbTypes.Transfer) Transfer {
+	return Transfer{
 		ID:              transfer.ID.String(),
 		DebitAccountID:  transfer.DebitAccountID.String(),
 		CreditAccountID: transfer.CreditAccountID.String(),
@@ -36,6 +41,4 @@ func (s *Service) GetTransfer(ctx context.Context, transferID string) (*Response
 		Amount:          transfer.Amount,
 		Timestamp:       transfer.Timestamp,
 	}
-
-	return &Response{Message: fmt.Sprintf("Found transfer"), Transfer: ret}, nil
 }

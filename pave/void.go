@@ -2,7 +2,6 @@ package pave
 
 import (
 	"context"
-	"fmt"
 
 	"encore.dev/rlog"
 
@@ -10,7 +9,7 @@ import (
 )
 
 //encore:api public path=/void/:pendingID
-func (s *Service) Void(ctx context.Context, pendingID string) (*Response, error) {
+func (s *Service) Void(ctx context.Context, pendingID string) (*VoidResponse, error) {
 	log := rlog.With(
 		"pendingID", pendingID,
 	)
@@ -21,5 +20,5 @@ func (s *Service) Void(ctx context.Context, pendingID string) (*Response, error)
 		return nil, err
 	}
 
-	return &Response{Message: fmt.Sprintf("Voided transfer: %s", pendingID)}, nil
+	return &VoidResponse{Message: "Voided transfer", PendingID: pendingID}, nil
 }

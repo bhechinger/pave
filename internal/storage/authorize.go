@@ -20,7 +20,7 @@ type AuthorizeOpts struct {
 	Amount      uint64
 }
 
-func Authorize(ctx context.Context, opts AuthorizeOpts, db tb.Client) error {
+func Authorize(ctx context.Context, opts AuthorizeOpts, db tb.Client) (tbTypes.Transfer, error) {
 	log := rlog.With(
 		"TransferID", opts.TransferID,
 		"PendingID", opts.PendingID,
@@ -44,8 +44,8 @@ func Authorize(ctx context.Context, opts AuthorizeOpts, db tb.Client) error {
 	err := createTransfer(ctx, transfer, db)
 	if err != nil {
 		log.Error("Error authorizing transfer", "error", err)
-		return fmt.Errorf("error authorizing transfer: %s", err)
+		return tbTypes.Transfer{}, fmt.Errorf("error authorizing transfer: %s", err)
 	}
 
-	return nil
+	return transfer, nil
 }

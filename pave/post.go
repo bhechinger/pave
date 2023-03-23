@@ -2,7 +2,6 @@ package pave
 
 import (
 	"context"
-	"fmt"
 
 	"encore.dev/rlog"
 
@@ -10,7 +9,7 @@ import (
 )
 
 //encore:api public path=/post/:pendingID
-func (s *Service) Post(ctx context.Context, pendingID string) (*Response, error) {
+func (s *Service) Post(ctx context.Context, pendingID string) (*PostResponse, error) {
 	log := rlog.With(
 		"pendingID", pendingID,
 	)
@@ -21,5 +20,5 @@ func (s *Service) Post(ctx context.Context, pendingID string) (*Response, error)
 		return nil, err
 	}
 
-	return &Response{Message: fmt.Sprintf("Posted funds for transfer: %s", pendingID)}, nil
+	return &PostResponse{Message: "Posted funds for transfer", PendingID: pendingID}, nil
 }
